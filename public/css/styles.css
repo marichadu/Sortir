@@ -1,0 +1,296 @@
+:root {
+    /* New Modern Color Palette */
+    --primary-color: #3B82F6;         /* Bright Blue */
+    --primary-light: #93C5FD;         /* Light Blue */
+    --primary-dark: #2563EB;          /* Dark Blue */
+    --accent-color: #10B981;          /* Emerald Green */
+    --accent-light: #6EE7B7;          /* Light Green */
+    --warning-color: #F59E0B;         /* Amber */
+    --danger-color: #EF4444;          /* Red */
+    --success-color: #10B981;         /* Green */
+    --background-color: #F9FAFB;      /* Light Gray */
+    --surface-color: #FFFFFF;         /* White */
+    --text-primary: #1F2937;          /* Dark Gray */
+    --text-secondary: #6B7280;        /* Medium Gray */
+    --border-color: #E5E7EB;          /* Light Gray */
+    --hover-bg: #F3F4F6;             /* Hover Background */
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Enhanced Navbar Styles */
+.navbar {
+    background: var(--surface-color) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: 0.75rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary-color) !important;
+    transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: translateY(-1px);
+}
+
+/* Improved Mobile Toggle Button */
+.navbar-toggler {
+    border: none;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.navbar-toggler-icon {
+    background-image: none;
+    position: relative;
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.navbar-toggler-icon::before {
+    top: -8px;
+}
+
+.navbar-toggler-icon::after {
+    bottom: -8px;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
+    background-color: transparent;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.navbar-toggler[aria-expanded="true"] .navbar-toggler-icon::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+.navbar-collapse {
+    transition: all 0.3s ease;
+}
+
+.nav-link {
+    color: var(--text-primary) !important;
+    font-weight: 500;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    position: relative;
+}
+
+.nav-link:hover {
+    background-color: var(--hover-bg);
+    transform: translateY(-1px);
+}
+
+.nav-link i {
+    width: 20px;
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.nav-link:hover i {
+    transform: scale(1.1);
+}
+
+.user-welcome {
+    background: var(--primary-light);
+    color: var(--primary-dark) !important;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.user-welcome:hover {
+    background: var(--primary-color);
+    color: white !important;
+}
+
+#current-time {
+    background: var(--hover-bg);
+    color: var(--text-secondary) !important;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.nav-logout {
+    background: var(--danger-color);
+    color: white !important;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.nav-logout:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* Mobile Navigation */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: var(--surface-color);
+        padding: 1rem;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        border-radius: 0 0 12px 12px;
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        transform: translateY(-100%);
+        opacity: 0;
+        display: block !important;
+        pointer-events: none;
+    }
+
+    .navbar-collapse.show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .navbar-collapse.collapsing {
+        transform: translateY(-100%);
+        opacity: 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .navbar-nav {
+        width: 100%;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        width: 100%;
+    }
+
+    .nav-link,
+    .user-welcome,
+    #current-time,
+    .nav-logout {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.8rem 1rem;
+    }
+
+    .nav-link i,
+    .user-welcome i,
+    #current-time i,
+    .nav-logout i {
+        width: 24px;
+    }
+
+    .navbar-nav:not(.me-auto) {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border-color);
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+
+    .navbar-toggler {
+        width: 26px;
+        height: 26px;
+    }
+
+    .navbar-toggler-icon,
+    .navbar-toggler-icon::before,
+    .navbar-toggler-icon::after {
+        width: 20px;
+    }
+
+    .nav-link,
+    .user-welcome,
+    #current-time,
+    .nav-logout {
+        font-size: 0.95rem;
+    }
+}
+
+/* Animation for mobile menu */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+} 

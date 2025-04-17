@@ -1,0 +1,111 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Campus{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Gestion des Campus</h1>
+
+        {# Formulaire de création de campus #}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Ajouter un campus</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ path('app_campus_new') }}" method="post" class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="nom" class="form-control" placeholder="Nom du campus" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
+                    <input type="hidden" name="_token" value="{{ csrf_token('create_campus') }}">
+                </form>
+            </div>
+        </div>
+
+        {# Liste des campus #}
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Nombre d'utilisateurs</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for campus in campuses %}
+                                <tr>
+                                    <td>{{ campus.nom }}</td>
+                                    <td>
+                                        <a href="{{ path('app_campus_users', {'id': campus.id}) }}" 
+                                           class="btn btn-link">
+                                            {{ campus.participants|length }} utilisateurs
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#editModal{{ campus.id }}">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </button>
+                                            {% if campus.participants|length == 0 %}
+                                                <form action="{{ path('app_campus_delete', {'id': campus.id}) }}" 
+                                                      method="post" 
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce campus ?');">
+                                                    <input type="hidden" name="_token" 
+                                                           value="{{ csrf_token('delete_campus' ~ campus.id) }}">
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash"></i> Supprimer
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+
+                                        {# Modal de modification #}
+                                        <div class="modal fade" id="editModal{{ campus.id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ path('app_campus_edit', {'id': campus.id}) }}" method="post">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Modifier le campus</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label for="nom{{ campus.id }}" class="form-label">Nom</label>
+                                                                <input type="text" 
+                                                                       class="form-control" 
+                                                                       id="nom{{ campus.id }}" 
+                                                                       name="nom" 
+                                                                       value="{{ campus.nom }}" 
+                                                                       required>
+                                                            </div>
+                                                            <input type="hidden" name="_token" 
+                                                                   value="{{ csrf_token('edit_campus' ~ campus.id) }}">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ participant.prenom }} {{ participant.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    {% if participant.photo %}
+                        <div class="col-md-3">
+                            <img src="{{ asset('uploads/photos/' ~ participant.photo) }}" 
+                                 class="img-fluid rounded" 
+                                 alt="Photo de profil">
+                        </div>
+                    {% endif %}
+                    <div class="col">
+                        <h1>{{ participant.prenom }} {{ participant.nom }}</h1>
+                        <p><strong>Campus :</strong> {{ participant.campus.nom }}</p>
+                        <p><strong>Email :</strong> {{ participant.email }}</p>
+                        <p><strong>Téléphone :</strong> {{ participant.telephone }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

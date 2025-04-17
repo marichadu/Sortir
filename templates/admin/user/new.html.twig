@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un nouvel utilisateur{% endblock %}
+
+{% block body %}
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h1 class="h4 mb-0">
+                            <i class="fas fa-user-plus me-2"></i>Créer un nouvel utilisateur
+                        </h1>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.pseudo, {
+                                        'label': 'Pseudo',
+                                        'label_attr': {'class': 'form-label fw-bold'},
+                                        'attr': {'class': 'form-control'}
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.nom, {
+                                        'label': 'Nom',
+                                        'label_attr': {'class': 'form-label fw-bold'},
+                                        'attr': {'class': 'form-control'}
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.prenom, {
+                                        'label': 'Prénom',
+                                        'label_attr': {'class': 'form-label fw-bold'},
+                                        'attr': {'class': 'form-control'}
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.telephone, {
+                                        'label': 'Téléphone',
+                                        'label_attr': {'class': 'form-label fw-bold'},
+                                        'attr': {'class': 'form-control'}
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.email, {
+                                        'label': 'Email',
+                                        'label_attr': {'class': 'form-label fw-bold'},
+                                        'attr': {'class': 'form-control'}
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.campus, {
+                                        'label': 'Campus',
+                                        'label_attr': {'class': 'form-label fw-bold'},
+                                        'attr': {'class': 'form-select'}
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.plainPassword, {
+                                        'label': 'Mot de passe',
+                                        'label_attr': {'class': 'form-label fw-bold'},
+                                        'attr': {'class': 'form-control'}
+                                    }) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(registrationForm.roles, {
+                                        'label': 'Rôle',
+                                        'label_attr': {'class': 'form-label fw-bold'},
+                                        'attr': {'class': 'form-select'}
+                                    }) }}
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        {{ form_widget(registrationForm.actif, {
+                                            'attr': {'class': 'form-check-input'}
+                                        }) }}
+                                        {{ form_label(registrationForm.actif, 'Actif', {
+                                            'label_attr': {'class': 'form-check-label fw-bold'}
+                                        }) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{{ path('admin_users_index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Retour
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Créer l'utilisateur
+                                </button>
+                            </div>
+                        {{ form_end(registrationForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .form-control:focus, .form-select:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        .form-label {
+            color: #495057;
+        }
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+        }
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .form-check.form-switch {
+            padding-left: 2.5em;
+        }
+        .form-check-input {
+            width: 2em;
+            margin-left: -2.5em;
+        }
+    </style>
+{% endblock %} 

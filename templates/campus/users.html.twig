@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateurs du campus {{ campus.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h1>Utilisateurs du campus {{ campus.nom }}</h1>
+            </div>
+            <div class="col text-end">
+                <a href="{{ path('app_campus_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour aux campus
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Email</th>
+                                <th>Téléphone</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td>{{ user.nom }}</td>
+                                    <td>{{ user.prenom }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.telephone }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ user.actif ? 'success' : 'danger' }}">
+                                            {{ user.actif ? 'Actif' : 'Inactif' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ path('app_participant_show', {'id': user.id}) }}" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> Voir
+                                            </a>
+
+                                            {% if app.user != user %}
+                                                {% if user.actif %}
+                                                    <form action="{{ path('app_admin_user_deactivate', {'id': user.id}) }}" 
+                                                          method="post" style="display: inline;">
+                                                        <input type="hidden" name="_token" 
+                                                               value="{{ csrf_token('deactivate' ~ user.id) }}">
+                                                        <button type="submit" class="btn btn-sm btn-warning">
+                                                            <i class="fas fa-user-slash"></i> Désactiver
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <form action="{{ path('app_admin_user_activate', {'id': user.id}) }}" 
+                                                          method="post" style="display: inline;">
+                                                        <input type="hidden" name="_token" 
+                                                               value="{{ csrf_token('activate' ~ user.id) }}">
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-user-check"></i> Activer
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+
+                                                <form action="{{ path('app_admin_user_delete', {'id': user.id}) }}" 
+                                                      method="post" 
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');"
+                                                      style="display: inline;">
+                                                    <input type="hidden" name="_token" 
+                                                           value="{{ csrf_token('delete' ~ user.id) }}">
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash"></i> Supprimer
+                                                    </button>
+                                                </form>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

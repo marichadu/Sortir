@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - Sortir.com{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h1 class="h4 mb-0">Mon Profil</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4 align-items-center">
+                            <div class="col-md-4 text-center">
+                                {% if participant.photo %}
+                                    <img src="{{ asset('uploads/photos/' ~ participant.photo) }}" alt="Photo de profil" class="img-thumbnail rounded-circle shadow-sm" style="max-width: 150px;">
+                                {% else %}
+                                    <img src="{{ asset('default.jpg') }}" alt="Photo de profil par défaut" class="img-thumbnail rounded-circle shadow-sm" style="max-width: 150px;">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="text-secondary">Nom</th>
+                                        <td>{{ participant.nom }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Prénom</th>
+                                        <td>{{ participant.prenom }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Email</th>
+                                        <td>{{ participant.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Téléphone</th>
+                                        <td>{{ participant.telephone ?? '<span class="text-muted">Non renseigné</span>'|raw }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-secondary">Campus</th>
+                                        <td>{{ participant.campus.nom }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <a href="{{ path('app_participant_edit') }}" class="btn btn-primary btn-lg">
+                                <i class="fas fa-edit me-2"></i> Modifier mon profil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

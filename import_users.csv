@@ -1,0 +1,7 @@
+email,nom,prenom,telephone,campus,pseudo,role
+pierre.martin@campus-eni.fr,Martin,Pierre,0623456789,Campus ENI Nantes,pmartin,ROLE_USER
+lucie.bernard@campus-eni.fr,Bernard,Lucie,0634567890,Campus ENI Niort,lbernard,ROLE_USER
+thomas.petit@campus-eni.fr,Petit,Thomas,0645678901,Campus ENI Rennes,tpetit,ROLE_ADMIN
+sophie.robert@campus-eni.fr,Robert,Sophie,0656789012,Campus ENI Quimper,srobert,ROLE_USER
+antoine.richard@campus-eni.fr,Richard,Antoine,0667890123,Campus ENI,arichard,ROLE_USER
+julie.durand@campus-eni.fr,Durand,Julie,0678901234,Campus ENI Nantes,jdurand,ROLE_USER

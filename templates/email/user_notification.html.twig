@@ -1,0 +1,51 @@
+{% extends 'email/base.html.twig' %}
+
+{% block content %}
+    {% if action == 'created' %}
+        <h2>Nouveau compte créé</h2>
+        <p>Un nouveau compte a été créé sur Sortir.com :</p>
+    {% elseif action == 'deactivated' %}
+        <h2>Compte désactivé</h2>
+        <p>Le compte suivant a été désactivé :</p>
+    {% elseif action == 'reactivated' %}
+        <h2>Compte réactivé</h2>
+        <p>Le compte suivant a été réactivé :</p>
+    {% elseif action == 'deleted' %}
+        <h2>Compte supprimé</h2>
+        <p>Le compte suivant a été supprimé :</p>
+    {% elseif action == 'updated' %}
+        <h2>Profil modifié</h2>
+        <p>Le profil suivant a été modifié :</p>
+    {% endif %}
+
+    <ul>
+        <li>Nom d'utilisateur : {{ user.pseudo }}</li>
+        <li>Email : {{ user.email }}</li>
+        <li>Prénom : {{ user.prenom }}</li>
+        <li>Nom : {{ user.nom }}</li>
+        <li>Campus : {{ user.campus.nom }}</li>
+    </ul>
+
+    {% if action == 'deactivated' %}
+        <div class="alert">
+            <p>L'utilisateur ne pourra plus se connecter jusqu'à ce que son compte soit réactivé.</p>
+        </div>
+    {% elseif action == 'reactivated' %}
+        <div class="info">
+            <p>L'utilisateur peut maintenant se connecter à nouveau.</p>
+        </div>
+    {% elseif action == 'deleted' %}
+        <div class="alert">
+            <p>Cette action est irréversible. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter l'administrateur du site.</p>
+        </div>
+    {% elseif action == 'updated' and changes is defined and changes|length > 0 %}
+        <div class="info">
+            <h3>Modifications effectuées :</h3>
+            <ul>
+                {% for field, change in changes %}
+                    <li>{{ field }} : {{ change[0] }} → {{ change[1] }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %} 

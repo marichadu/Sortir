@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - Sortir.com{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h1 class="h3 mb-0">Connexion</h1>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% if error %}
+                                <div class="alert alert-danger">
+                                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" 
+                                       value="{{ last_username }}" 
+                                       name="email" 
+                                       id="email" 
+                                       class="form-control" 
+                                       required 
+                                       autofocus>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mot de passe</label>
+                                <input type="password" 
+                                       name="password" 
+                                       id="password" 
+                                       class="form-control" 
+                                       required>
+                                <div class="text-end mt-2">
+                                    <a href="{{ path('app_forgot_password_request') }}" class="text-decoration-none">
+                                        <i class="fas fa-key"></i> Mot de passe oublié ?
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" 
+                                       class="form-check-input" 
+                                       id="_remember_me" 
+                                       name="_remember_me">
+                                <label class="form-check-label" for="_remember_me">
+                                    Se souvenir de moi
+                                </label>
+                            </div>
+
+                            <input type="hidden" 
+                                   name="_csrf_token" 
+                                   value="{{ csrf_token('authenticate') }}">
+
+                            <div class="d-grid">
+                                <button class="btn btn-primary" type="submit">
+                                    Se connecter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

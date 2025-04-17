@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon Profil - Sortir.com{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h1 class="h4 mb-0">Modifier mon Profil</h1>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form_row(form.nom, {'label_attr': {'class': 'text-secondary'}}) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.prenom, {'label_attr': {'class': 'text-secondary'}}) }}
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    {{ form_row(form.email, {'label_attr': {'class': 'text-secondary'}}) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.telephone, {'label_attr': {'class': 'text-secondary'}}) }}
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-6">
+                                    {{ form_row(form.campus, {'label_attr': {'class': 'text-secondary'}}) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form_row(form.photo, {'label_attr': {'class': 'text-secondary'}}) }}
+                                </div>
+                            </div>
+                            <div class="row g-3 mt-3">
+                                <div class="col-12">
+                                    {{ form_row(form.plainPassword, {'label_attr': {'class': 'text-secondary'}}) }}
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-12 text-center">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 w-md-auto">
+                                        <i class="fas fa-save me-2"></i> Enregistrer
+                                    </button>
+                                    <a href="{{ path('app_participant_profile') }}" class="btn btn-secondary btn-lg w-100 w-md-auto mt-3 mt-md-0 ms-md-3">
+                                        <i class="fas fa-times me-2"></i> Annuler
+                                    </a>
+                                </div>
+                            </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

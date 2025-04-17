@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Villes{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h1>Gestion des Villes</h1>
+            </div>
+        </div>
+
+        {# Formulaire de filtrage #}
+        <div class="card mb-4">
+            <div class="card-body">
+                {{ form_start(filterForm) }}
+                <div class="row">
+                    <div class="col-md-3">
+                        {{ form_row(filterForm.search) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_row(filterForm.codePostal) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_row(filterForm.departement) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_row(filterForm.region) }}
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                    <a href="{{ path('app_ville_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-undo"></i> Réinitialiser
+                    </a>
+                </div>
+                {{ form_end(filterForm) }}
+            </div>
+        </div>
+
+        {# Formulaire d'ajout de ville #}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Ajouter une ville</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ path('app_ville_new') }}" method="post" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" name="nom" class="form-control" placeholder="Nom de la ville" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="codePostal" class="form-control" placeholder="Code postal" required>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="region" class="form-control" placeholder="Région">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Ajouter
+                        </button>
+                    </div>
+                    <input type="hidden" name="_token" value="{{ csrf_token('create_ville') }}">
+                </form>
+            </div>
+        </div>
+
+        {# Liste des villes #}
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Code Postal</th>
+                                <th>Département</th>
+                                <th>Région</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ville in villes %}
+                                <tr>
+                                    <td>{{ ville.nom }}</td>
+                                    <td>{{ ville.codePostal }}</td>
+                                    <td>{{ ville.codePostal|slice(0, 2) }}</td>
+                                    <td>{{ ville.region|default('-') }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-primary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#editModal{{ ville.id }}">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </button>
+                                            <form action="{{ path('app_ville_delete', {'id': ville.id}) }}" 
+                                                  method="post" 
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette ville ?');">
+                                                <input type="hidden" name="_token" 
+                                                       value="{{ csrf_token('delete_ville' ~ ville.id) }}">
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash"></i> Supprimer
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        {# Modal de modification #}
+                                        <div class="modal fade" id="editModal{{ ville.id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ path('app_ville_edit', {'id': ville.id}) }}" method="post">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Modifier la ville</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <label for="nom{{ ville.id }}" class="form-label">Nom</label>
+                                                                <input type="text" 
+                                                                       class="form-control" 
+                                                                       id="nom{{ ville.id }}" 
+                                                                       name="nom" 
+                                                                       value="{{ ville.nom }}" 
+                                                                       required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="codePostal{{ ville.id }}" class="form-label">Code Postal</label>
+                                                                <input type="text" 
+                                                                       class="form-control" 
+                                                                       id="codePostal{{ ville.id }}" 
+                                                                       name="codePostal" 
+                                                                       value="{{ ville.codePostal }}" 
+                                                                       required>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="region{{ ville.id }}" class="form-label">Région</label>
+                                                                <input type="text" 
+                                                                       class="form-control" 
+                                                                       id="region{{ ville.id }}" 
+                                                                       name="region" 
+                                                                       value="{{ ville.region }}">
+                                                            </div>
+                                                            <input type="hidden" name="_token" 
+                                                                   value="{{ csrf_token('edit_ville' ~ ville.id) }}">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

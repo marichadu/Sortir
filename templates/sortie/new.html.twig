@@ -1,0 +1,545 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une Sortie - Sortir.com{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .sortie-form {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .form-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+        .form-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .location-search-wrapper {
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .autocomplete-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1051;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 2px;
+        }
+        .autocomplete-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        .autocomplete-item:hover {
+            background-color: #f8f9fa;
+        }
+        .autocomplete-item.active {
+            background-color: #e9ecef;
+        }
+        .autocomplete-item .main-text {
+            font-weight: 500;
+            color: #212529;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+        .autocomplete-item .secondary-text {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            pointer-events: none;
+        }
+        #address-search {
+            padding-left: 40px;
+        }
+        .btn-primary {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+        .modal-content {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #f0f0f0;
+            border-radius: 10px 10px 0 0;
+        }
+        .modal-footer {
+            border-top: 2px solid #f0f0f0;
+            border-radius: 0 0 10px 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container sortie-form">
+        <div class="form-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="mb-0">Créer une nouvelle sortie</h1>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ path('app_sortie_index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            {{ form_start(form) }}
+            <input type="hidden" name="_token" value="{{ csrf_token('ville_create') }}">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.nom) }}
+                            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.lieu) }}
+                            <div class="input-group">
+                                {{ form_widget(form.lieu, {'attr': {'class': 'form-control'}}) }}
+                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#newLieuModal">
+                                    <i class="fas fa-plus me-2"></i>Nouveau lieu
+                                </button>
+                            </div>
+                            {{ form_errors(form.lieu) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.dateHeureDebut) }}
+                            {{ form_widget(form.dateHeureDebut, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.dateLimiteInscription) }}
+                            {{ form_widget(form.dateLimiteInscription, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.nbInscriptionsMax) }}
+                            {{ form_widget(form.nbInscriptionsMax, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ form_label(form.duree) }}
+                            {{ form_widget(form.duree, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            {{ form_label(form.infosSortie) }}
+                            {{ form_widget(form.infosSortie, {'attr': {'class': 'form-control', 'rows': 4}}) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Créer la sortie
+                        </button>
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="newLieuModal" tabindex="-1" aria-labelledby="newLieuModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newLieuModalLabel">Ajouter un nouveau lieu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newLieuForm">
+                        <div class="location-search-wrapper">
+                            <label for="address-search" class="form-label">Rechercher une adresse</label>
+                            <div style="position: relative;">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="address-search" 
+                                       placeholder="Commencez à taper une adresse..."
+                                       autocomplete="off">
+                            </div>
+                            <div id="autocomplete-results" class="autocomplete-results"></div>
+                        </div>
+                        
+                        <div id="map"></div>
+
+                        <div class="mb-3">
+                            <label for="nom" class="form-label">Nom du lieu</label>
+                            <input type="text" class="form-control" id="nom" name="lieu[nom]" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rue" class="form-label">Rue</label>
+                            <input type="text" class="form-control" id="rue" name="lieu[rue]" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ville-nom" class="form-label">Ville</label>
+                            <input type="text" class="form-control" id="ville-nom" readonly>
+                            <input type="hidden" id="ville-id" name="lieu[ville]">
+                        </div>
+                        <input type="hidden" id="latitude" name="lieu[latitude]">
+                        <input type="hidden" id="longitude" name="lieu[longitude]">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-primary" id="saveLieuBtn">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the map
+            const map = L.map('map', {
+                zoomControl: true,
+                scrollWheelZoom: true,
+                doubleClickZoom: true,
+                touchZoom: true
+            }).setView([46.603354, 1.888334], 6);
+
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            let marker;
+            let searchTimeout;
+            const searchInput = document.getElementById('address-search');
+            const resultsContainer = document.getElementById('autocomplete-results');
+            const nomInput = document.getElementById('nom');
+            const rueInput = document.getElementById('rue');
+            const villeNomInput = document.getElementById('ville-nom');
+            const villeIdInput = document.getElementById('ville-id');
+            const latitudeInput = document.getElementById('latitude');
+            const longitudeInput = document.getElementById('longitude');
+
+            // Handle input in search box with debounce
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+
+                if (query.length < 3) {
+                    resultsContainer.style.display = 'none';
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    // Using OpenStreetMap Nominatim API with better parameters
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=fr&limit=5&addressdetails=1&featuretype=street,house,building,amenity`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            resultsContainer.innerHTML = '';
+                            
+                            if (data && data.length > 0) {
+                                data.forEach(result => {
+                                    const div = document.createElement('div');
+                                    div.className = 'autocomplete-item';
+                                    
+                                    const mainText = document.createElement('div');
+                                    mainText.className = 'main-text';
+                                    mainText.textContent = result.display_name.split(',')[0] || 'Adresse non spécifiée';
+                                    
+                                    const secondaryText = document.createElement('div');
+                                    secondaryText.className = 'secondary-text';
+                                    secondaryText.textContent = result.display_name.split(',').slice(1).join(',').trim() || 'Localisation non spécifiée';
+                                    
+                                    div.appendChild(mainText);
+                                    div.appendChild(secondaryText);
+                                    
+                                    div.addEventListener('click', () => {
+                                        searchInput.value = result.display_name;
+                                        handleAddressSelection(result);
+                                    });
+                                    
+                                    div.addEventListener('mouseover', () => {
+                                        div.classList.add('active');
+                                    });
+                                    
+                                    div.addEventListener('mouseout', () => {
+                                        div.classList.remove('active');
+                                    });
+                                    
+                                    resultsContainer.appendChild(div);
+                                });
+                                
+                                resultsContainer.style.display = 'block';
+                            } else {
+                                const noResults = document.createElement('div');
+                                noResults.className = 'autocomplete-item';
+                                noResults.textContent = 'Aucun résultat trouvé';
+                                resultsContainer.appendChild(noResults);
+                                resultsContainer.style.display = 'block';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error in address search:', error);
+                            resultsContainer.innerHTML = '<div class="autocomplete-item">Erreur lors de la recherche. Veuillez réessayer.</div>';
+                            resultsContainer.style.display = 'block';
+                        });
+                }, 300);
+            });
+
+            // Handle keyboard navigation
+            let selectedIndex = -1;
+            searchInput.addEventListener('keydown', function(e) {
+                const items = resultsContainer.getElementsByClassName('autocomplete-item');
+                
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (selectedIndex < items.length - 1) {
+                        selectedIndex++;
+                        updateSelectedItem(items);
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (selectedIndex > 0) {
+                        selectedIndex--;
+                        updateSelectedItem(items);
+                    }
+                } else if (e.key === 'Enter' && selectedIndex >= 0) {
+                    e.preventDefault();
+                    const selectedItem = items[selectedIndex];
+                    if (selectedItem) {
+                        selectedItem.click();
+                    }
+                }
+            });
+
+            function updateSelectedItem(items) {
+                for (let i = 0; i < items.length; i++) {
+                    items[i].classList.remove('active');
+                }
+                if (selectedIndex >= 0) {
+                    items[selectedIndex].classList.add('active');
+                    items[selectedIndex].scrollIntoView({ block: 'nearest' });
+                }
+            }
+
+            // Hide results when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                    resultsContainer.style.display = 'none';
+                    selectedIndex = -1;
+                }
+            });
+
+            // Function to handle address selection
+            async function handleAddressSelection(result) {
+                try {
+                    if (!result || !result.lat || !result.lon) {
+                        throw new Error('Données d\'adresse invalides');
+                    }
+
+                    // Update marker and map view
+                    updateMarker(result.lat, result.lon);
+                    updateCoordinates(result.lat, result.lon);
+
+                    // Update form fields
+                    const address = result.address || {};
+                    document.getElementById('rue').value = [
+                        address.house_number,
+                        address.road
+                    ].filter(Boolean).join(' ') || '';
+                    
+                    if (!document.getElementById('nom').value) {
+                        document.getElementById('nom').value = result.display_name.split(',')[0] || 'Nouveau lieu';
+                    }
+
+                    // Clear and hide results
+                    resultsContainer.style.display = 'none';
+                    resultsContainer.innerHTML = '';
+                    searchInput.value = result.display_name;
+
+                    // Try to get city information
+                    if (address.city || address.town || address.postcode) {
+                        try {
+                            const requestData = {
+                                nom: address.city || address.town || '',
+                                code_postal: address.postcode || '',
+                                region: address.state || '',
+                                departement: address.county || '',
+                                _token: '{{ csrf_token('ville_create') }}'
+                            };
+
+                            const response = await fetch('{{ path('app_ville_create_if_not_exists') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                },
+                                body: JSON.stringify(requestData)
+                            });
+
+                            const data = await response.json();
+
+                            if (data.success) {
+                                document.getElementById('ville-nom').value = data.ville.nom;
+                                document.getElementById('ville-id').value = data.ville.id;
+                            }
+                        } catch (error) {
+                            console.error('Error saving city:', error);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error in address selection:', error);
+                    alert('Une erreur est survenue lors de la sélection de l\'adresse');
+                }
+            }
+
+            // Function to update marker position
+            function updateMarker(lat, lng) {
+                if (marker) {
+                    map.removeLayer(marker);
+                }
+                
+                marker = L.marker([lat, lng], {
+                    draggable: true,
+                    autoPan: true
+                }).addTo(map);
+                
+                map.setView([lat, lng], 16);
+            }
+
+            // Function to update coordinates in form
+            function updateCoordinates(lat, lng) {
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+            }
+
+            // Handle form submission
+            const saveLieuBtn = document.getElementById('saveLieuBtn');
+            const lieuSelect = document.getElementById('{{ form.lieu.vars.id }}');
+            const modal = document.getElementById('newLieuModal');
+            const modalInstance = new bootstrap.Modal(modal);
+
+            saveLieuBtn.addEventListener('click', async function() {
+                const formData = new FormData(document.getElementById('newLieuForm'));
+                
+                // Validate required fields
+                const villeId = villeIdInput.value;
+                const nom = nomInput.value;
+                const rue = rueInput.value;
+                
+                if (!villeId || !nom || !rue) {
+                    alert('Veuillez remplir tous les champs obligatoires');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('{{ path('app_lieu_new_ajax') }}', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    if (data.success) {
+                        // Add the new lieu to the select options
+                        const option = new Option(data.nom, data.id, true, true);
+                        lieuSelect.add(option);
+                        
+                        // Close the modal
+                        modalInstance.hide();
+                        
+                        // Reset the form
+                        document.getElementById('newLieuForm').reset();
+                        if (marker) {
+                            map.removeLayer(marker);
+                        }
+                        
+                        // Show success message
+                        alert(data.message);
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Une erreur est survenue lors de la création du lieu');
+                }
+            });
+        });
+    </script>
+{% endblock %} 

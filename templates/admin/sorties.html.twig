@@ -1,0 +1,97 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Sorties{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col">
+                <h1>Gestion des Sorties</h1>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Date</th>
+                                <th>Campus</th>
+                                <th>Organisateur</th>
+                                <th>État</th>
+                                <th>Inscrits</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for sortie in sorties %}
+                                <tr>
+                                    <td>{{ sortie.nom }}</td>
+                                    <td>{{ sortie.dateHeureDebut|date('d/m/Y H:i') }}</td>
+                                    <td>{{ sortie.campus.nom }}</td>
+                                    <td>
+                                        <a href="{{ path('app_participant_show', {'id': sortie.organisateur.id}) }}">
+                                            {{ sortie.organisateur.prenom }} {{ sortie.organisateur.nom }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ sortie.etat == 'Annulée' ? 'danger' : 
+                                            (sortie.etat == 'Clôturée' ? 'warning' : 
+                                            (sortie.etat == 'Activité en cours' ? 'info' : 
+                                            (sortie.etat == 'Passée' ? 'secondary' : 'success'))) }}">
+                                            {{ sortie.etat }}
+                                        </span>
+                                    </td>
+                                    <td>{{ sortie.participants|length }}/{{ sortie.nbInscriptionsMax }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ path('app_sortie_show', {'id': sortie.id}) }}" 
+                                               class="btn btn-sm btn-info">
+                                                <i class="fas fa-eye"></i> Voir
+                                            </a>
+                                            {% if sortie.etat != 'Annulée' %}
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-danger" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#cancelModal{{ sortie.id }}">
+                                                    <i class="fas fa-ban"></i> Annuler
+                                                </button>
+                                            {% endif %}
+                                        </div>
+
+                                        {# Modal d'annulation #}
+                                        <div class="modal fade" id="cancelModal{{ sortie.id }}" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form action="{{ path('app_sortie_cancel', {'id': sortie.id}) }}" method="post">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">Annuler la sortie</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ sortie.id) }}">
+                                                            <div class="mb-3">
+                                                                <label for="motif{{ sortie.id }}" class="form-label">Motif d'annulation</label>
+                                                                <textarea name="motif" id="motif{{ sortie.id }}" class="form-control" required></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                                            <button type="submit" class="btn btn-danger">Annuler la sortie</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Email envoyé - Sortir.com{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h1 class="h3 mb-0">Email envoyé</h1>
+                    </div>
+                    <div class="card-body">
+                        {% for label, messages in app.flashes %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ label }}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+
+                        <p class="mb-4">
+                            Si un compte correspondant à votre adresse email existe, un email contenant un lien pour réinitialiser votre mot de passe vient d'être envoyé. Ce lien expirera dans {{ tokenLifetime|date('g') }} heure(s).
+                        </p>
+                        <p class="mb-4">
+                            Si vous ne recevez pas d'email, veuillez vérifier votre dossier spam ou réessayer.
+                        </p>
+
+                        <div class="text-center">
+                            <a href="{{ path('app_login') }}" class="btn btn-primary">
+                                <i class="fas fa-arrow-left"></i> Retour à la connexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

@@ -1,0 +1,28 @@
+{% extends 'email/base.html.twig' %}
+
+{% block title %}Bienvenue sur Sortir.com{% endblock %}
+
+{% block header_title %}Bienvenue sur Sortir.com{% endblock %}
+
+{% block content %}
+    <p>Bonjour {{ user.prenom }} {{ user.nom }},</p>
+    
+    <p>Votre compte a été créé avec succès sur Sortir.com. Voici vos identifiants de connexion :</p>
+    
+    <div class="credentials">
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <p><strong>Mot de passe :</strong> {{ plainPassword }}</p>
+    </div>
+    
+    <div class="alert">
+        <p>Pour des raisons de sécurité, nous vous recommandons de changer votre mot de passe dès votre première connexion.</p>
+    </div>
+    
+    <p>Vous pouvez vous connecter en cliquant sur le bouton ci-dessous :</p>
+    
+    <a href="{{ absolute_url(path('app_login')) }}" class="button">Se connecter</a>
+    
+    <p>Si vous avez des questions, n'hésitez pas à contacter l'administrateur du site.</p>
+    
+    <p>Cordialement,<br>L'équipe Sortir.com</p>
+{% endblock %} 

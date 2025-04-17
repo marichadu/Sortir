@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Sortie - {{ sortie.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        {# En-tête de la page #}
+        <div class="page-header text-center mb-5">
+            <h1 class="mb-3">{{ sortie.nom }}</h1>
+            <a href="{{ path('app_sortie_index') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+            </a>
+        </div>
+
+        {# Informations générales et lieu #}
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card sortie-card">
+                    <div class="card-header sortie-header">
+                        <h5 class="text-primary mb-0">Informations générales</h5>
+                    </div>
+                    <div class="card-body sortie-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Date et heure :</strong> {{ sortie.dateHeureDebut|date('d/m/Y H:i') }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Date limite d'inscription :</strong> {{ sortie.dateLimiteInscription|date('d/m/Y') }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Places :</strong> {{ sortie.participants|length }}/{{ sortie.nbInscriptionsMax }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Durée :</strong> {{ sortie.duree }} minutes
+                            </li>
+                            <li class="list-group-item">
+                                <strong>État :</strong>
+                                <span class="badge bg-{{ sortie.etat == 'Annulée' ? 'danger' : 
+                                    (sortie.etat == 'Clôturée' ? 'warning' : 
+                                    (sortie.etat == 'Activité en cours' ? 'info' : 
+                                    (sortie.etat == 'Passée' ? 'secondary' : 'success'))) }}">
+                                    {{ sortie.etat }}
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card sortie-card">
+                    <div class="card-header sortie-header">
+                        <h5 class="text-primary mb-0">Lieu</h5>
+                    </div>
+                    <div class="card-body sortie-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Nom :</strong> {{ sortie.lieu.nom }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Rue :</strong> {{ sortie.lieu.rue }}
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Ville :</strong> {{ sortie.lieu.ville.nom }} ({{ sortie.lieu.ville.codePostal }})
+                            </li>
+                            {% if sortie.lieu.latitude and sortie.lieu.longitude %}
+                                <li class="list-group-item">
+                                    <strong>Coordonnées :</strong> {{ sortie.lieu.latitude }}, {{ sortie.lieu.longitude }}
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card sortie-card mt-4">
+            <div class="card-header sortie-header">
+                <h5 class="text-primary mb-0">Localisation</h5>
+            </div>
+            <div class="card-body sortie-body">
+                {% if sortie.lieu.latitude and sortie.lieu.longitude %}
+                    <div id="map" style="height: 300px; width: 100%;"></div>
+                    <a href="https://www.google.com/maps?q={{ sortie.lieu.latitude }},{{ sortie.lieu.longitude }}" 
+                       target="_blank" 
+                       class="btn btn-outline-primary mt-3">
+                        <i class="fas fa-map-marker-alt me-2"></i> Voir sur Google Maps
+                    </a>
+                {% else %}
+                    <p class="text-muted">Les coordonnées GPS ne sont pas disponibles pour ce lieu.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Description et infos supplémentaires #}
+        {% if sortie.infosSortie %}
+            <div class="card sortie-card mt-4">
+                <div class="card-header sortie-header">
+                    <h5 class="text-primary mb-0">Description et infos</h5>
+                </div>
+                <div class="card-body sortie-body">
+                    <p class="card-text">{{ sortie.infosSortie|nl2br }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Liste des participants #}
+        <div class="card sortie-card mt-4">
+            <div class="card-header sortie-header">
+                <h5 class="text-primary mb-0">Participants ({{ sortie.participants|length }})</h5>
+            </div>
+            <div class="card-body sortie-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Campus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for participant in sortie.participants %}
+                                <tr>
+                                    <td>{{ participant.nom }}</td>
+                                    <td>{{ participant.prenom }}</td>
+                                    <td>{{ participant.campus.nom }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        {% if sortie.etat == 'Créée' and sortie.organisateur == app.user %}
+        <form method="post" action="{{ path('app_sortie_publish', {'id': sortie.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir publier cette sortie ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('publish' ~ sortie.id) }}">
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-check me-2"></i> Publier
+            </button>
+        </form>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if sortie.lieu.latitude and sortie.lieu.longitude %}
+                // Initialize the map
+                var map = L.map('map').setView([{{ sortie.lieu.latitude }}, {{ sortie.lieu.longitude }}], 13);
+
+                // Add the OpenStreetMap tiles
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
+
+                // Add a marker to the map
+                L.marker([{{ sortie.lieu.latitude }}, {{ sortie.lieu.longitude }}])
+                    .addTo(map)
+                    .bindPopup('<strong>{{ sortie.lieu.nom }}</strong><br>{{ sortie.lieu.rue }}<br>{{ sortie.lieu.ville.nom }}')
+                    .openPopup();
+            {% endif %}
+        });
+    </script>
+{% endblock %}
